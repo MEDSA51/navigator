@@ -1,6 +1,6 @@
-# NTU MEDSA Navigator
+# NTUMEDSA Navigator
 
-A premium, high-performance navigator for NTU MEDSA (國立臺灣大學醫學系學生會). This site serves as a central hub for all MEDSA-related services, including event signups, Notion resources, and student affairs.
+A premium, high-performance navigator for NTUMEDSA (國立臺灣大學醫學系學生會). This site serves as a central hub for all MEDSA-related services, including event signups, Notion resources, and student affairs.
 
 ## Features
 - ✨ **Premium Design**: Modern aesthetic with glassmorphism and smooth animations.
