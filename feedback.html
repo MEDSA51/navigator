@@ -140,15 +140,24 @@
       }
     ];
 
+    const Icon = ({ name, className = "w-6 h-6" }) => {
+      const icons = {
+        'message-square': <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>,
+        'send': <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></svg>,
+        'check-circle': <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>,
+        'alert-circle': <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>,
+        'help-circle': <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>,
+        'chevron-down': <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="6 9 12 15 18 9" /></svg>,
+        'arrow-left': <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" /></svg>
+      };
+      return icons[name] || null;
+    };
+
     const App = () => {
       const [formData, setFormData] = useState({ name: '', studentId: '', email: '', category: '校園總務', message: '' });
       const [isSubmitting, setIsSubmitting] = useState(false);
       const [status, setStatus] = useState(null);
       const [openFaq, setOpenFaq] = useState(null);
-
-      useEffect(() => {
-        if (window.lucide) lucide.createIcons();
-      }, []);
 
       const encode = (data) => {
         return Object.keys(data)
@@ -161,7 +170,6 @@
         setIsSubmitting(true);
         setStatus(null);
         try {
-          // Post to Netlify directly
           await fetch("/", {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -192,7 +200,7 @@
             <section>
               <div className="flex items-center gap-3 mb-8">
                 <div className="p-2 bg-violet-100 text-violet-600 rounded-lg">
-                  <i data-lucide="message-square" className="w-6 h-6"></i>
+                  <Icon name="message-square" />
                 </div>
                 <h2 className="text-2xl font-bold">填寫反映事項</h2>
               </div>
@@ -233,14 +241,14 @@
 
                 {status && (
                   <div className={`p-4 rounded-xl flex items-center gap-3 animate-slide-in ${status.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-rose-50 text-rose-700 border border-rose-100'}`}>
-                    <i data-lucide={status.type === 'success' ? "check-circle" : "alert-circle"} className="w-5 h-5"></i>
+                    <Icon name={status.type === 'success' ? "check-circle" : "alert-circle"} className="w-5 h-5" />
                     <p className="text-sm font-medium">{status.message}</p>
                   </div>
                 )}
 
                 <button disabled={isSubmitting} type="submit" className={`btn-primary w-full ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}>
                   {isSubmitting ? "處裡中..." : "送出回饋"}
-                  {!isSubmitting && <i data-lucide="send" className="w-5 h-5"></i>}
+                  {!isSubmitting && <Icon name="send" className="w-5 h-5" />}
                 </button>
               </form>
             </section>
@@ -250,7 +258,7 @@
           <div className="space-y-6">
             <div className="flex items-center gap-3 mb-8">
               <div className="p-2 bg-violet-100 text-violet-600 rounded-lg">
-                <i data-lucide="help-circle" className="w-6 h-6"></i>
+                <Icon name="help-circle" />
               </div>
               <h2 className="text-2xl font-bold">常見問題 (FAQs)</h2>
             </div>
@@ -263,7 +271,7 @@
                     className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50/50 transition-colors"
                   >
                     <span className="font-bold text-gray-800 pr-4">{faq.question}</span>
-                    <i data-lucide="chevron-down" className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${openFaq === faq.id ? 'rotate-180' : ''}`}></i>
+                    <Icon name="chevron-down" className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${openFaq === faq.id ? 'rotate-180' : ''}`} />
                   </button>
                   <div className={`transition-all duration-300 ease-in-out overflow-hidden ${openFaq === faq.id ? 'max-h-60' : 'max-h-0'}`}>
                     <div className="px-6 pb-6 pt-2 text-gray-600">
@@ -280,7 +288,7 @@
           {/* Back to Home */}
           <div className="text-center mt-12">
             <a href="index.html" className="text-gray-400 hover:text-gray-600 transition-colors inline-flex items-center gap-2 text-sm font-medium">
-              <i data-lucide="arrow-left" className="w-4 h-4"></i>
+              <Icon name="arrow-left" className="w-4 h-4" />
               返回首頁
             </a>
           </div>
