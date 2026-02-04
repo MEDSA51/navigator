@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>意見回饋 | NTUMEDSA</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- React & Tailwind -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    :root {
+      --bg-light: #fdfdff;
+      --card-bg: #ffffff;
+      --card-border: #e5e7eb;
+      --card-hover-shadow: rgba(139, 92, 246, 0.15);
+      --primary-lavender: #8b5cf6;
+      --text-primary: #1f2937;
+      --text-secondary: #6b7280;
+    }
+
+    body {
+      background-color: var(--bg-light);
+      color: var(--text-primary);
+      font-family: 'Outfit', 'Noto Sans TC', sans-serif;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+      background-size: 40px 40px;
+      opacity: 0.4;
+    }
+
+    .premium-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
+      background: #fafafa;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .input-field:focus {
+      border-color: var(--primary-lavender);
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+    }
+
+    .btn-primary {
+      background: var(--primary-lavender);
+      color: white;
+      padding: 14px 24px;
+      border-radius: 14px;
+      font-weight: 700;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 10px 15px -3px rgba(139, 92, 246, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 25px -5px rgba(139, 92, 246, 0.4);
+      filter: brightness(1.1);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const FAQ_DATA = [
+      {
+        id: '1',
+        category: '校園總務',
+        question: '若中午想要攜帶午餐，可在何處自行加熱？',
+        answer: '基醫大樓三樓設有蒸飯室，該處有蒸飯箱以及微波爐，供醫學院師生使用。'
+      },
+      {
+        id: '2',
+        category: '校園總務',
+        question: '中午用餐空間不足，有哪些用餐空間？',
+        answer: '基醫大樓公共空間部分，2F~5F陽光走廊、1F木椅區及沙發區、二樓學開、四樓自習室外皆可使用，另外，中午 12:10-13:00 也有開放基醫405、505教室給同學用餐。'
+      }
+    ];
+
+    const App = () => {
+      const [formData, setFormData] = useState({ name: '', studentId: '', email: '', category: '校園總務', message: '' });
+      const [isSubmitting, setIsSubmitting] = useState(false);
+      const [status, setStatus] = useState(null);
+      const [openFaq, setOpenFaq] = useState(null);
+
+      useEffect(() => {
+        lucide.createIcons();
+      }, []);
+
+      const handleSubmit = async (e) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+        setStatus(null);
+        try {
+          const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw0V0fOMupVXA-Uw7uQPp45zSeraiJU4Gja9-B5-qvuFzqQVYjAX08Sqi9UnZsjZ0jxmw/exec';
+          await fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+          });
+          setStatus({ type: 'success', message: '您的回饋已成功記錄！感謝您的參與。' });
+          setFormData({ name: '', studentId: '', email: '', category: '校園總務', message: '' });
+        } catch (err) {
+          setStatus({ type: 'error', message: '送出失敗，請稍後再試。' });
+        } finally {
+          setIsSubmitting(false);
+        }
+      };
+
+      return (
+        <main className="max-w-3xl mx-auto px-6 py-16">
+          {/* Header */}
+          <header className="text-center mb-12">
+            <a href="index.html" className="inline-block mb-6 hover:scale-105 transition-transform">
+              <img src="logo.png" alt="NTUMEDSA Logo" className="w-20 h-20 rounded-full border-4 border-white shadow-lg mx-auto" />
+            </a>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">意見回饋</h1>
+            <p className="text-gray-500">學生權益反映與聯繫窗口</p>
+          </header>
+
+          {/* Feedback Form Card */}
+          <div className="premium-card p-8 mb-16">
+            <section>
+              <div className="flex items-center gap-3 mb-8">
+                <div className="p-2 bg-violet-100 text-violet-600 rounded-lg">
+                  <i data-lucide="message-square" className="w-6 h-6"></i>
+                </div>
+                <h2 className="text-2xl font-bold">填寫反映事項</h2>
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-gray-700 ml-1">姓名</label>
+                    <input required type="text" placeholder="您的姓名" className="input-field" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-gray-700 ml-1">學號</label>
+                    <input required type="text" placeholder="B12401XXX" className="input-field" value={formData.studentId} onChange={e => setFormData({ ...formData, studentId: e.target.value })} />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-gray-700 ml-1">電子信箱</label>
+                    <input required type="email" placeholder="example@ntu.edu.tw" className="input-field" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-gray-700 ml-1">反映類別</label>
+                    <select className="input-field appearance-none" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })}>
+                      <option>校園總務</option>
+                      <option>赴外交換</option>
+                      <option>課程教學</option>
+                      <option>活動建議</option>
+                      <option>其他</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-gray-700 ml-1">詳細描述</label>
+                  <textarea required rows={4} placeholder="請具體描述您的問題或建議..." className="input-field resize-none" value={formData.message} onChange={e => setFormData({ ...formData, message: e.target.value })} />
+                </div>
+
+                {status && (
+                  <div className={`p-4 rounded-xl flex items-center gap-3 animate-slide-in ${status.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-rose-50 text-rose-700 border border-rose-100'}`}>
+                    <i data-lucide={status.type === 'success' ? "check-circle" : "alert-circle"} className="w-5 h-5"></i>
+                    <p className="text-sm font-medium">{status.message}</p>
+                  </div>
+                )}
+
+                <button disabled={isSubmitting} type="submit" className={`btn-primary w-full ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}>
+                  {isSubmitting ? "處裡中..." : "送出回饋"}
+                  {!isSubmitting && <i data-lucide="send" className="w-5 h-5"></i>}
+                </button>
+              </form>
+            </section>
+          </div>
+
+          {/* FAQ Section */}
+          <div className="space-y-6">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="p-2 bg-violet-100 text-violet-600 rounded-lg">
+                <i data-lucide="help-circle" className="w-6 h-6"></i>
+              </div>
+              <h2 className="text-2xl font-bold">常見問題 (FAQs)</h2>
+            </div>
+
+            <div className="space-y-4">
+              {FAQ_DATA.map(faq => (
+                <div key={faq.id} className="premium-card overflow-hidden">
+                  <button
+                    onClick={() => setOpenFaq(openFaq === faq.id ? null : faq.id)}
+                    className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50/50 transition-colors"
+                  >
+                    <span className="font-bold text-gray-800 pr-4">{faq.question}</span>
+                    <i data-lucide="chevron-down" className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${openFaq === faq.id ? 'rotate-180' : ''}`}></i>
+                  </button>
+                  <div className={`transition-all duration-300 ease-in-out overflow-hidden ${openFaq === faq.id ? 'max-h-60' : 'max-h-0'}`}>
+                    <div className="px-6 pb-6 pt-2 text-gray-600">
+                      <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 italic">
+                        {faq.answer}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Back to Home */}
+          <div className="text-center mt-12">
+            <a href="index.html" className="text-gray-400 hover:text-gray-600 transition-colors inline-flex items-center gap-2 text-sm font-medium">
+              <i data-lucide="arrow-left" className="w-4 h-4"></i>
+              返回首頁
+            </a>
+          </div>
+        </main>
+      );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+
+</html>
