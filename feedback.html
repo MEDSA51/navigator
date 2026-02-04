@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>意見回饋 | NTUMEDSA</title>
+  <title>StudentHub | 校園生活助手</title>
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -107,6 +107,21 @@
 <body>
   <div id="root"></div>
 
+  <!-- Hidden form for Netlify Bots to detect during build -->
+  <form name="feedback" data-netlify="true" hidden>
+    <input type="text" name="name" />
+    <input type="text" name="studentId" />
+    <input type="email" name="email" />
+    <select name="category">
+      <option>校園總務</option>
+      <option>赴外交換</option>
+      <option>課程教學</option>
+      <option>活動建議</option>
+      <option>其他</option>
+    </select>
+    <textarea name="message"></textarea>
+  </form>
+
   <script type="text/babel">
     const { useState, useEffect } = React;
 
@@ -132,25 +147,30 @@
       const [openFaq, setOpenFaq] = useState(null);
 
       useEffect(() => {
-        lucide.createIcons();
+        if (window.lucide) lucide.createIcons();
       }, []);
+
+      const encode = (data) => {
+        return Object.keys(data)
+          .map(key => encodeURIComponent(key) + "=" + encodeURIComponent(data[key]))
+          .join("&");
+      }
 
       const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
         setStatus(null);
         try {
-          const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw0V0fOMupVXA-Uw7uQPp45zSeraiJU4Gja9-B5-qvuFzqQVYjAX08Sqi9UnZsjZ0jxmw/exec';
-          await fetch(APPS_SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(formData)
+          // Post to Netlify directly
+          await fetch("/", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: encode({ "form-name": "feedback", ...formData })
           });
           setStatus({ type: 'success', message: '您的回饋已成功記錄！感謝您的參與。' });
           setFormData({ name: '', studentId: '', email: '', category: '校園總務', message: '' });
         } catch (err) {
-          setStatus({ type: 'error', message: '送出失敗，請稍後再試。' });
+          setStatus({ type: 'error', message: '送出失敗，請重試或直接寄信至 contact@ntumedsa.org。' });
         } finally {
           setIsSubmitting(false);
         }
@@ -181,22 +201,22 @@
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-sm font-bold text-gray-700 ml-1">姓名</label>
-                    <input required type="text" placeholder="您的姓名" className="input-field" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
+                    <input required name="name" type="text" placeholder="您的姓名" className="input-field" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-bold text-gray-700 ml-1">學號</label>
-                    <input required type="text" placeholder="B12401XXX" className="input-field" value={formData.studentId} onChange={e => setFormData({ ...formData, studentId: e.target.value })} />
+                    <input required name="studentId" type="text" placeholder="B12401XXX" className="input-field" value={formData.studentId} onChange={e => setFormData({ ...formData, studentId: e.target.value })} />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-sm font-bold text-gray-700 ml-1">電子信箱</label>
-                    <input required type="email" placeholder="example@ntu.edu.tw" className="input-field" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
+                    <input required name="email" type="email" placeholder="example@ntu.edu.tw" className="input-field" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-bold text-gray-700 ml-1">反映類別</label>
-                    <select className="input-field appearance-none" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })}>
+                    <select name="category" className="input-field appearance-none" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })}>
                       <option>校園總務</option>
                       <option>赴外交換</option>
                       <option>課程教學</option>
@@ -208,7 +228,7 @@
 
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-gray-700 ml-1">詳細描述</label>
-                  <textarea required rows={4} placeholder="請具體描述您的問題或建議..." className="input-field resize-none" value={formData.message} onChange={e => setFormData({ ...formData, message: e.target.value })} />
+                  <textarea required name="message" rows={4} placeholder="請具體描述您的問題或建議..." className="input-field resize-none" value={formData.message} onChange={e => setFormData({ ...formData, message: e.target.value })} />
                 </div>
 
                 {status && (
